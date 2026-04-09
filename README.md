@@ -1,5 +1,7 @@
 # DuoShe (夺舍)
 
+[简体中文](README.zh-CN.md)
+
 `duo-she` is a cross-runtime AI skill for Claude Code and Codex.
 
 It turns the model into a direct execution coach: less brainstorming, more decision-making, scoped missions, honest review, and recurring accountability when the user asks for it.
