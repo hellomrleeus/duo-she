@@ -50,9 +50,9 @@ Rules:
 
 ## State requirements
 
-Campaign state should track the planning truth in `duo-she-state.json`.
+Campaign state should track the planning truth in `.duo-she/duo-she-state.json`.
 
-Channel state should track the delivery truth in `.duo-she-<channel>-state.json`.
+Channel state should track the delivery truth in `.duo-she/<channel>-state.json`.
 
 Channel state should include:
 
@@ -77,14 +77,14 @@ Example:
 
 ```bash
 python3 scripts/evaluate_follow_up.py \
-  --state-file .duo-she-telegram-state.json
+  --state-file .duo-she/telegram-state.json
 ```
 
 If it returns `{"action":"send",...}`, dispatch the reminder through the active channel and then call:
 
 ```bash
 python3 scripts/evaluate_follow_up.py \
-  --state-file .duo-she-telegram-state.json \
+  --state-file .duo-she/telegram-state.json \
   --mark-sent
 ```
 

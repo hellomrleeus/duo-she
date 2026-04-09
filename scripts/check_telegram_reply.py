@@ -104,7 +104,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--state-file",
-        default=".duo-she-telegram-state.json",
+        default=".duo-she/telegram-state.json",
         help="JSON state file used to track last_update_id and completion state.",
     )
     args = parser.parse_args()

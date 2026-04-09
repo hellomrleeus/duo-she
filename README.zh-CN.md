@@ -114,17 +114,17 @@ git clone git@github.com:hellomrleeus/duo-she.git
 
 当目标不是一句话就能完成时，DuoShe 可以在当前工作区生成：
 
-- `duo-she-plan.md`
-- `duo-she-state.json`
-- `.duo-she-<channel>-state.json`
+- `.duo-she/duo-she-plan.md`
+- `.duo-she/duo-she-state.json`
+- `.duo-she/<channel>-state.json`
 
 它们的职责分别是：
 
-- `duo-she-plan.md`：给人看的清单和时间线
-- `duo-she-state.json`：保存阶段、任务、复盘、阻塞和总进度
-- `.duo-she-<channel>-state.json`：保存 Telegram、Email 或自动提醒的发送状态与提醒计数
+- `.duo-she/duo-she-plan.md`：给人看的清单和时间线
+- `.duo-she/duo-she-state.json`：保存阶段、任务、复盘、阻塞和总进度
+- `.duo-she/<channel>-state.json`：保存 Telegram、Email 或自动提醒的发送状态与提醒计数
 
-这些属于运行时数据，应该生成在当前工作目录，而不是 skill 自己的目录里。
+这些属于运行时数据，应该统一放在当前项目目录下的 `.duo-she/` 中，而不是 skill 自己的目录里。
 
 ## 可选跟进渠道
 

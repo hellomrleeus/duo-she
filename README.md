@@ -114,17 +114,17 @@ Expected flow:
 
 When the task matters beyond a single reply, DuoShe can create:
 
-- `duo-she-plan.md`
-- `duo-she-state.json`
-- `.duo-she-<channel>-state.json`
+- `.duo-she/duo-she-plan.md`
+- `.duo-she/duo-she-state.json`
+- `.duo-she/<channel>-state.json`
 
 Use them this way:
 
-- `duo-she-plan.md`: human-readable checklist and timeline
-- `duo-she-state.json`: planning truth for phases, missions, reviews, blockers, and progress
-- `.duo-she-<channel>-state.json`: delivery truth for Telegram, email, or automation reminder loops
+- `.duo-she/duo-she-plan.md`: human-readable checklist and timeline
+- `.duo-she/duo-she-state.json`: planning truth for phases, missions, reviews, blockers, and progress
+- `.duo-she/<channel>-state.json`: delivery truth for Telegram, email, or automation reminder loops
 
-These files are runtime data and should be created in the active workspace, not inside the skill folder.
+These files are runtime data and should live under `.duo-she/` in the active project, not inside the skill folder.
 
 ## Optional Follow-Up Channels
 

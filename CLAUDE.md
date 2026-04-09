@@ -203,19 +203,19 @@ If the user is in a hurry, mission-first output is acceptable: issue the mission
 
 ## Persistence And State Model
 
-When the goal matters beyond a single reply, persist the execution state in the current workspace unless the user asks for another location.
+When the goal matters beyond a single reply, persist the execution state under `.duo-she/` in the current project unless the user asks for another location.
 
 Use these files:
 
-- `duo-she-plan.md`: human-readable campaign map and checklist
-- `duo-she-state.json`: campaign state for goal, phases, current mission, reviews, blockers, and progress
-- `.duo-she-<channel>-state.json`: optional delivery state for Telegram, email, or automation reminder loops
+- `.duo-she/duo-she-plan.md`: human-readable campaign map and checklist
+- `.duo-she/duo-she-state.json`: campaign state for goal, phases, current mission, reviews, blockers, and progress
+- `.duo-she/<channel>-state.json`: optional delivery state for Telegram, email, or automation reminder loops
 
 Separation rule:
 
 - Campaign state owns planning truth
 - Channel state owns delivery truth
-- Never overload `duo-she-state.json` with channel-specific reminder counters or transport IDs
+- Never overload `.duo-she/duo-she-state.json` with channel-specific reminder counters or transport IDs
 
 Campaign state should track:
 
@@ -240,7 +240,7 @@ Channel state should track:
 
 Follow [`references/task-map.md`](references/task-map.md) when creating or refreshing these files.
 
-If the user explicitly wants a visual tracker, build a simple local HTML or React dashboard that reads from `duo-she-plan.md` and `duo-she-state.json` so the UI and checklist stay aligned.
+If the user explicitly wants a visual tracker, build a simple local HTML or React dashboard under `.duo-she/`, preferably `.duo-she/task-dashboard.html`, and have it read from `.duo-she/duo-she-plan.md` and `.duo-she/duo-she-state.json` so the UI and checklist stay aligned.
 
 ## Check-In Modes
 

@@ -18,9 +18,9 @@ That means the task map must show both:
 
 Use two state layers when durable execution matters:
 
-- `duo-she-plan.md`: human-readable campaign map and checklist
-- `duo-she-state.json`: campaign state for planning truth
-- `.duo-she-<channel>-state.json`: optional delivery state for Telegram, email, or automation loops
+- `.duo-she/duo-she-plan.md`: human-readable campaign map and checklist
+- `.duo-she/duo-she-state.json`: campaign state for planning truth
+- `.duo-she/<channel>-state.json`: optional delivery state for Telegram, email, or automation loops
 
 Use campaign state for:
 
@@ -57,7 +57,7 @@ Use this default granularity:
 
 Expand future work into hourly detail just-in-time as the user approaches it.
 
-## Suggested `duo-she-plan.md` structure
+## Suggested `.duo-she/duo-she-plan.md` structure
 
 ```md
 # 夺舍任务地图
@@ -106,7 +106,7 @@ Expand future work into hourly detail just-in-time as the user approaches it.
 - None
 ```
 
-## Suggested `duo-she-state.json` shape
+## Suggested `.duo-she/duo-she-state.json` shape
 
 ```json
 {
@@ -165,7 +165,7 @@ Expand future work into hourly detail just-in-time as the user approaches it.
 
 ## Suggested channel state shape
 
-Use `.duo-she-telegram-state.json`, `.duo-she-email-state.json`, or another channel-specific filename.
+Use `.duo-she/telegram-state.json`, `.duo-she/email-state.json`, or another channel-specific filename under `.duo-she/`.
 
 ```json
 {

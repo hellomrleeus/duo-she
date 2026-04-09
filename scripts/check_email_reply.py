@@ -112,7 +112,7 @@ def classify_reply(text: str) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Check for an email reply from the target sender.")
     parser.add_argument("--config", default=str(default_config_path()))
-    parser.add_argument("--state-file", default=".duo-she-email-state.json")
+    parser.add_argument("--state-file", default=".duo-she/email-state.json")
     parser.add_argument("--reply-from")
     parser.add_argument("--folder")
     parser.add_argument("--sample-size", type=int, default=100)

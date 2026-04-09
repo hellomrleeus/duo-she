@@ -60,7 +60,7 @@ Freeform replies are still accepted; the script records the latest reply text an
 
 ```bash
 python3 scripts/send_telegram.py \
-  --state-file .duo-she-telegram-state.json \
+  --state-file .duo-she/telegram-state.json \
   --task-id speaking-day-03 \
   --mission-id M-2026-04-10-01 \
   --deadline-minutes 60 \
@@ -75,14 +75,14 @@ python3 scripts/send_telegram.py \
 
 ```bash
 python3 scripts/check_telegram_reply.py \
-  --state-file .duo-she-telegram-state.json
+  --state-file .duo-she/telegram-state.json
 ```
 
 ## Example: decide whether another nudge is due
 
 ```bash
 python3 scripts/evaluate_follow_up.py \
-  --state-file .duo-she-telegram-state.json
+  --state-file .duo-she/telegram-state.json
 ```
 
 ## Automation pattern
