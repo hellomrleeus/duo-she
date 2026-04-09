@@ -6,6 +6,8 @@
 
 It turns the model into a direct execution coach: less brainstorming, more decision-making, scoped missions, honest review, and recurring accountability when the user asks for it.
 
+Runtime rule: the skill files are treated as read-only. DuoShe writes all project-specific state, configs, channel secrets, reminders, and dashboards under the active project's `.duo-she/` directory.
+
 ## What It Does
 
 - Locks vague goals into concrete, measurable outcomes
@@ -72,6 +74,8 @@ ln -s /path/to/duo-she "${CODEX_HOME:-$HOME/.codex}/skills/duo-she"
 
 Detailed Codex install notes live in [`.codex/INSTALL.md`](.codex/INSTALL.md).
 
+For Telegram and email setup, run the setup scripts from the project root so the config lands in `.duo-she/`.
+
 ### Claude Code
 
 Clone the repository and place it where Claude Code can read the skill instructions:
@@ -117,12 +121,15 @@ When the task matters beyond a single reply, DuoShe can create:
 - `.duo-she/duo-she-plan.md`
 - `.duo-she/duo-she-state.json`
 - `.duo-she/<channel>-state.json`
+- `.duo-she/telegram.json`
+- `.duo-she/email.json`
 
 Use them this way:
 
 - `.duo-she/duo-she-plan.md`: human-readable checklist and timeline
 - `.duo-she/duo-she-state.json`: planning truth for phases, missions, reviews, blockers, and progress
 - `.duo-she/<channel>-state.json`: delivery truth for Telegram, email, or automation reminder loops
+- `.duo-she/telegram.json` and `.duo-she/email.json`: project-local channel credentials and routing config
 
 These files are runtime data and should live under `.duo-she/` in the active project, not inside the skill folder.
 

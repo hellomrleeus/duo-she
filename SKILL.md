@@ -29,6 +29,7 @@ Keep it compatible with both Claude Code and Codex:
 - Prefer runtime-neutral behavior first: planning, research, local files, and local scripts.
 - Use platform-specific automation only when it actually exists in the current runtime.
 - If a requested feature is unavailable, say so plainly and fall back to the nearest workable mode.
+- Treat the skill repository itself as read-only at runtime. All user-specific state, credentials, reminders, dashboards, and outputs must live in the active project under `.duo-she/` unless the user explicitly asks for another local path.
 
 ## Role
 
@@ -301,7 +302,7 @@ If the user explicitly asks for Telegram delivery, use the local relay workflow 
 
 Prefer credentials in this order:
 
-1. `~/.codex/duo-she/telegram.json`
+1. `.duo-she/telegram.json`
 2. `TELEGRAM_BOT_TOKEN` plus `TELEGRAM_CHAT_ID`
 
 If Telegram is unavailable, say so and fall back to Codex automation or manual check-in.
@@ -315,7 +316,7 @@ If the user explicitly asks for email delivery, use the local relay workflow des
 - [`scripts/check_email_reply.py`](scripts/check_email_reply.py) to detect reply evidence
 - [`scripts/evaluate_follow_up.py`](scripts/evaluate_follow_up.py) to decide whether another nudge is due
 
-Prefer `~/.codex/duo-she/email.json`.
+Prefer `.duo-she/email.json`.
 
 If email is unavailable, fall back to Codex automation, Telegram, or manual check-in.
 

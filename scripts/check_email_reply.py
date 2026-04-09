@@ -7,7 +7,6 @@ import argparse
 import email
 import imaplib
 import json
-import os
 from datetime import datetime, timezone
 from email import policy
 from email.utils import getaddresses, parsedate_to_datetime
@@ -15,8 +14,7 @@ from pathlib import Path
 
 
 def default_config_path() -> Path:
-    codex_home = Path(os.getenv("CODEX_HOME", Path.home() / ".codex")).expanduser()
-    return codex_home / "duo-she" / "email.json"
+    return Path(".duo-she") / "email.json"
 
 
 def load_json(path: Path) -> dict:

@@ -15,8 +15,7 @@ from pathlib import Path
 
 
 def default_config_path() -> Path:
-    codex_home = Path(os.getenv("CODEX_HOME", Path.home() / ".codex")).expanduser()
-    return codex_home / "duo-she" / "email.json"
+    return Path(".duo-she") / "email.json"
 
 
 def load_json(path: Path) -> dict:

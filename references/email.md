@@ -13,11 +13,12 @@ Use this path when the user explicitly asks for email delivery or email-based ch
 
 Save the config once to:
 
-- `~/.codex/duo-she/email.json`
+- `.duo-she/email.json`
 
 Use:
 
 ```bash
+cd /path/to/project
 python3 scripts/setup_email.py
 ```
 

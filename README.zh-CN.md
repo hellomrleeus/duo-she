@@ -6,6 +6,8 @@
 
 它会把模型切换成一个偏“执行接管”的教练角色：少一点空泛 brainstorming，多一点明确决策、可交付任务、真实复盘，以及在用户明确提出时提供持续盯进度的能力。
 
+运行约束：skill 自身文件默认视为只读。DuoShe 产生的项目状态、通道配置、token、邮箱信息、提醒状态和 dashboard 都统一写到当前项目的 `.duo-she/` 目录里。
+
 ## 它能做什么
 
 - 把模糊目标压缩成可验证、可衡量的结果
@@ -72,6 +74,8 @@ ln -s /path/to/duo-she "${CODEX_HOME:-$HOME/.codex}/skills/duo-she"
 
 更完整的 Codex 安装说明见 [`.codex/INSTALL.md`](.codex/INSTALL.md)。
 
+如果要初始化 Telegram 或 Email，请从项目根目录执行 setup 脚本，这样配置才会落到 `.duo-she/`。
+
 ### Claude Code
 
 克隆仓库，并把它放到 Claude Code 可以读取指令文件的位置：
@@ -117,12 +121,15 @@ git clone git@github.com:hellomrleeus/duo-she.git
 - `.duo-she/duo-she-plan.md`
 - `.duo-she/duo-she-state.json`
 - `.duo-she/<channel>-state.json`
+- `.duo-she/telegram.json`
+- `.duo-she/email.json`
 
 它们的职责分别是：
 
 - `.duo-she/duo-she-plan.md`：给人看的清单和时间线
 - `.duo-she/duo-she-state.json`：保存阶段、任务、复盘、阻塞和总进度
 - `.duo-she/<channel>-state.json`：保存 Telegram、Email 或自动提醒的发送状态与提醒计数
+- `.duo-she/telegram.json` 和 `.duo-she/email.json`：保存项目本地的消息通路配置、token 和邮箱信息
 
 这些属于运行时数据，应该统一放在当前项目目录下的 `.duo-she/` 中，而不是 skill 自己的目录里。
 

@@ -77,6 +77,7 @@ You should see:
 ### Telegram
 
 ```bash
+cd /path/to/project
 python3 "${CODEX_HOME:-$HOME/.codex}/skills/duo-she/scripts/setup_telegram.py" \
   --bot-token ... \
   --chat-id ...
@@ -85,19 +86,20 @@ python3 "${CODEX_HOME:-$HOME/.codex}/skills/duo-she/scripts/setup_telegram.py" \
 This saves config to:
 
 ```bash
-~/.codex/duo-she/telegram.json
+.duo-she/telegram.json
 ```
 
 ### Email
 
 ```bash
+cd /path/to/project
 python3 "${CODEX_HOME:-$HOME/.codex}/skills/duo-she/scripts/setup_email.py"
 ```
 
 This saves config to:
 
 ```bash
-~/.codex/duo-she/email.json
+.duo-she/email.json
 ```
 
 ## Updating
@@ -132,8 +134,8 @@ python3 scripts/sync_skill.py --check
 rm -rf "${CODEX_HOME:-$HOME/.codex}/skills/duo-she"
 ```
 
-Optional runtime config cleanup:
+Optional project-local runtime cleanup:
 
 ```bash
-rm -rf "${CODEX_HOME:-$HOME/.codex}/duo-she"
+rm -rf .duo-she
 ```

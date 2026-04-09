@@ -5,14 +5,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import stat
 from pathlib import Path
 
 
 def default_config_path() -> Path:
-    codex_home = Path(os.getenv("CODEX_HOME", Path.home() / ".codex")).expanduser()
-    return codex_home / "duo-she" / "telegram.json"
+    return Path(".duo-she") / "telegram.json"
 
 
 def prompt_if_missing(value: str | None, label: str) -> str:
@@ -31,7 +29,7 @@ def main() -> None:
     parser.add_argument(
         "--config",
         default=str(default_config_path()),
-        help="Where to save the config JSON. Defaults to ~/.codex/duo-she/telegram.json",
+        help="Where to save the config JSON. Defaults to .duo-she/telegram.json in the project.",
     )
     args = parser.parse_args()
 

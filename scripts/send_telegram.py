@@ -13,8 +13,7 @@ from urllib import error, parse, request
 
 
 def default_config_path() -> Path:
-    codex_home = Path(os.getenv("CODEX_HOME", Path.home() / ".codex")).expanduser()
-    return codex_home / "duo-she" / "telegram.json"
+    return Path(".duo-she") / "telegram.json"
 
 
 def load_config(path: Path) -> dict:
@@ -32,13 +31,13 @@ def resolve_secret(
 ) -> str:
     if cli_value:
         return cli_value
+    value = config.get(config_key)
+    if value:
+        return str(value)
     for name in env_names:
         value = os.getenv(name)
         if value:
             return value
-    value = config.get(config_key)
-    if value:
-        return str(value)
     raise SystemExit(
         f"Missing {label}. Provide --{label.replace('_', '-')}, set one of: {', '.join(env_names)}, "
         f"or configure {default_config_path()}"
@@ -86,7 +85,7 @@ def main() -> None:
     parser.add_argument(
         "--config",
         default=str(default_config_path()),
-        help="Path to Telegram config JSON. Defaults to ~/.codex/duo-she/telegram.json",
+        help="Path to Telegram config JSON. Defaults to .duo-she/telegram.json in the project.",
     )
     parser.add_argument("--text", help="Message text. If omitted, read from stdin.")
     parser.add_argument("--parse-mode", choices=["Markdown", "MarkdownV2", "HTML"])

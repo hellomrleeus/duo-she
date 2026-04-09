@@ -5,14 +5,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import stat
 from pathlib import Path
 
 
 def default_config_path() -> Path:
-    codex_home = Path(os.getenv("CODEX_HOME", Path.home() / ".codex")).expanduser()
-    return codex_home / "duo-she" / "email.json"
+    return Path(".duo-she") / "email.json"
 
 
 def prompt_if_missing(value: str | None, label: str, default: str | None = None) -> str:
@@ -29,7 +27,11 @@ def prompt_if_missing(value: str | None, label: str, default: str | None = None)
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Save SMTP/IMAP config for DuoShe email reminders.")
-    parser.add_argument("--config", default=str(default_config_path()))
+    parser.add_argument(
+        "--config",
+        default=str(default_config_path()),
+        help="Where to save the config JSON. Defaults to .duo-she/email.json in the project.",
+    )
     parser.add_argument("--smtp-host")
     parser.add_argument("--smtp-port", type=int)
     parser.add_argument("--smtp-security", choices=["ssl", "starttls", "none"])

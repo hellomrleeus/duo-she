@@ -16,7 +16,7 @@ Use this path only when the user explicitly asks for Telegram delivery.
 
 For plug-and-play use inside the DuoShe skill, save them once to:
 
-- `~/.codex/duo-she/telegram.json`
+- `.duo-she/telegram.json`
 
 ## How to get them
 
@@ -38,12 +38,13 @@ export TELEGRAM_CHAT_ID=...
 Or save them once with the setup script:
 
 ```bash
+cd /path/to/project
 python3 scripts/setup_telegram.py \
   --bot-token ... \
   --chat-id ...
 ```
 
-After that, `send_telegram.py` and `check_telegram_reply.py` will read the config automatically.
+After that, `send_telegram.py` and `check_telegram_reply.py` will read the project-local config automatically.
 
 ## Recommended reply contract
 
