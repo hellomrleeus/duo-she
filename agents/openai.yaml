@@ -1,0 +1,4 @@
+interface:
+  display_name: "DuoShe (夺舍)"
+  short_description: "Execution takeover with phased plans and hard accountability"
+  default_prompt: "Use $duo-she to take over this goal, turn it into phased and hourly missions, and hold me accountable with honest follow-up."
