@@ -145,6 +145,8 @@ git clone git@github.com:hellomrleeus/duo-she.git
 
 Telegram 和 Email 都需要一次性初始化以及本地凭据配置。
 
+Telegram 和 Email 的回执捕获是 polling 模式，不是 webhook 触发。一次性运行只能负责发送，后续要靠 heartbeat 持续运行才能发现用户回复。
+
 提醒节奏默认带静默时段：
 
 - 默认 quiet hours：`22:00-08:00`

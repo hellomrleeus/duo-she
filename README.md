@@ -145,6 +145,8 @@ If the user explicitly asks for recurring follow-up, DuoShe can use:
 
 Telegram and email require one-time setup and local credentials.
 
+Reply capture for Telegram and email is polling-based. A single run can send a message, but only later heartbeat runs can notice the user's reply.
+
 Reminder timing is quiet-hours-aware:
 
 - default quiet hours: `22:00-08:00`

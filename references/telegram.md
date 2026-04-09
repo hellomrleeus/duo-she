@@ -10,6 +10,21 @@ Use this path only when the user explicitly asks for Telegram delivery.
 - Evaluate no-reply escalation with `scripts/evaluate_follow_up.py`
 - Stop nudging as soon as a valid user reply arrives
 
+## Polling model
+
+Telegram follow-up is polling-based, not event-driven.
+
+That means:
+
+- sending can happen on one run
+- reply capture only happens on a later run
+- a one-shot automation can send a message but cannot see a reply that arrives after it exits
+
+Recommended cadence:
+
+- demo or test flows: every 1 minute
+- normal follow-up: every 3-5 minutes
+
 ## Required secrets
 
 - `TELEGRAM_BOT_TOKEN`
@@ -63,7 +78,7 @@ Freeform replies are still accepted; the script records the latest reply text an
 Preferred orchestration path:
 
 ```bash
-python3 scripts/run_telegram_followup.py --project-root .
+python3 scripts/run_telegram_followup.py --project-root . --poll-seconds 60
 ```
 
 That script will:
@@ -108,7 +123,7 @@ python3 scripts/evaluate_follow_up.py \
 For a recurring automation loop, prefer:
 
 ```bash
-python3 scripts/run_telegram_followup.py --project-root .
+python3 scripts/run_telegram_followup.py --project-root . --poll-seconds 60
 ```
 
 Do not generate a new project-local `telegram_followup.py` wrapper unless the user explicitly asks for custom logic that the built-in orchestrator cannot express.

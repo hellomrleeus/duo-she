@@ -92,8 +92,10 @@ This saves config to:
 For recurring Telegram follow-up, prefer:
 
 ```bash
-python3 "${CODEX_HOME:-$HOME/.codex}/skills/duo-she/scripts/run_telegram_followup.py" --project-root .
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/duo-she/scripts/run_telegram_followup.py" --project-root . --poll-seconds 60
 ```
+
+Use this from a recurring heartbeat. A one-shot run can send the message, but only later runs can capture the user's reply.
 
 ### Email
 
@@ -111,8 +113,10 @@ This saves config to:
 For recurring email follow-up, prefer:
 
 ```bash
-python3 "${CODEX_HOME:-$HOME/.codex}/skills/duo-she/scripts/run_email_followup.py" --project-root .
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/duo-she/scripts/run_email_followup.py" --project-root . --poll-seconds 60
 ```
+
+Use this from a recurring heartbeat. A one-shot run can send the message, but only later runs can capture the user's reply.
 
 ## Updating
 

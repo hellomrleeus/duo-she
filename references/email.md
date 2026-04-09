@@ -10,6 +10,21 @@ Use this path when the user explicitly asks for email delivery or email-based ch
 - Evaluate no-reply escalation with `scripts/evaluate_follow_up.py`
 - Stop nudging as soon as a valid user reply arrives
 
+## Polling model
+
+Email follow-up is polling-based, not event-driven.
+
+That means:
+
+- sending can happen on one run
+- reply capture only happens on a later run
+- a one-shot automation can send a message but cannot see a reply that arrives after it exits
+
+Recommended cadence:
+
+- demo or test flows: every 1 minute
+- normal follow-up: every 3-5 minutes
+
 ## Required configuration
 
 Save the config once to:
@@ -49,7 +64,7 @@ Freeform replies are still accepted; the script records the latest reply text an
 Preferred orchestration path:
 
 ```bash
-python3 scripts/run_email_followup.py --project-root .
+python3 scripts/run_email_followup.py --project-root . --poll-seconds 60
 ```
 
 That script will:

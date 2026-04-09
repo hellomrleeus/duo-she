@@ -196,10 +196,6 @@ def set_blocker(campaign: dict[str, Any], detail: str, evidence_ref: str, timezo
 def mark_sent(campaign: dict[str, Any], channel: str, channel_state: dict[str, Any], timezone_name: str) -> None:
     ensure_campaign_state(campaign, timezone_name)
     clear_blockers(campaign)
-    due_at = channel_state.get("due_at")
-    due_text = ""
-    if due_at:
-        due_text = datetime.fromtimestamp(int(due_at), safe_timezone(timezone_name)).isoformat()
     campaign["status"] = "awaiting_reply"
     campaign["last_review"] = {
         "status": "sent",
@@ -209,7 +205,6 @@ def mark_sent(campaign: dict[str, Any], channel: str, channel_state: dict[str, A
         "notes": f"Sent {channel} follow-up for the current mission.",
         "next_decision": "Wait for the user reply or send the next nudge when the evaluator says it is due.",
     }
-    campaign["next_check_in"] = due_text
 
 
 def mark_waiting(
@@ -252,6 +247,11 @@ def mark_reply(
         "text": text,
         "recorded_at": recorded_at,
     }
+    campaign[f"{channel}_reply"] = {
+        "status": status,
+        "text": text,
+        "recorded_at": recorded_at,
+    }
     mission = current_mission(campaign)
     if mission:
         mission["last_reply_status"] = status
@@ -285,6 +285,7 @@ def parse_args(channel: str) -> argparse.Namespace:
     parser.add_argument("--text", help="Override the initial outbound message.")
     parser.add_argument("--subject", help="Override the initial email subject.")
     parser.add_argument("--deadline-minutes", type=int)
+    parser.add_argument("--poll-seconds", type=int, default=60)
     parser.add_argument("--timezone")
     parser.add_argument("--quiet-hours")
     parser.add_argument("--workday-end")
@@ -387,8 +388,10 @@ def main(channel: str) -> int:
         channel_state = load_json(channel_state_path, {})
         channel_state["_path"] = str(channel_state_path)
         mark_sent(campaign, channel, channel_state, timezone_name)
+        next_check_ts = int(datetime.now(safe_timezone(timezone_name)).timestamp()) + max(30, args.poll_seconds)
+        campaign["next_check_in"] = datetime.fromtimestamp(next_check_ts, safe_timezone(timezone_name)).isoformat()
         save_json(campaign_path, campaign)
-        print(json.dumps({"status": "sent", "payload": payload}, ensure_ascii=False))
+        print(json.dumps({"status": "sent", "payload": payload, "next_check_in": campaign["next_check_in"]}, ensure_ascii=False))
         return 0
 
     reply = run_json(
@@ -407,6 +410,23 @@ def main(channel: str) -> int:
         mark_reply(campaign, channel, channel_state, timezone_name)
         save_json(campaign_path, campaign)
         print(json.dumps({"status": "reply_recorded", "reply": reply}, ensure_ascii=False))
+        return 0
+    if not channel_state.get("awaiting_reply", True):
+        if channel_state.get("reply_text") or channel_state.get("reply_status"):
+            mark_reply(campaign, channel, channel_state, timezone_name)
+            save_json(campaign_path, campaign)
+            print(
+                json.dumps(
+                    {
+                        "status": "reply_already_recorded",
+                        "reply_status": channel_state.get("reply_status"),
+                        "reply_text": channel_state.get("reply_text"),
+                    },
+                    ensure_ascii=False,
+                )
+            )
+            return 0
+        print(json.dumps({"status": "idle", "reason": "channel_not_awaiting_reply"}, ensure_ascii=False))
         return 0
 
     now_ts = int(datetime.now(safe_timezone(timezone_name)).timestamp())
@@ -471,7 +491,7 @@ def main(channel: str) -> int:
         )
         channel_state = load_json(channel_state_path, {})
         channel_state["_path"] = str(channel_state_path)
-        next_check_ts = now_ts + int(next_decision.get("wait_seconds", 0)) if next_decision.get("wait_seconds") else None
+        next_check_ts = now_ts + max(30, args.poll_seconds)
         mark_waiting(
             campaign,
             channel,
@@ -481,16 +501,35 @@ def main(channel: str) -> int:
             next_check_ts,
         )
         save_json(campaign_path, campaign)
-        print(json.dumps({"status": "nudge_sent", "decision": decision, "payload": payload}, ensure_ascii=False))
+        print(
+            json.dumps(
+                {
+                    "status": "nudge_sent",
+                    "decision": decision,
+                    "payload": payload,
+                    "next_check_in": campaign.get("next_check_in"),
+                },
+                ensure_ascii=False,
+            )
+        )
         return 0
 
-    next_check_ts = now_ts + int(decision.get("wait_seconds", 0)) if decision.get("wait_seconds") else None
+    next_check_ts = now_ts + max(30, args.poll_seconds)
     note = f"Waiting for {channel} reply."
     if decision.get("reason"):
         note += f" Evaluator status: {decision['reason']}."
     mark_waiting(campaign, channel, channel_state, timezone_name, note, next_check_ts)
     save_json(campaign_path, campaign)
-    print(json.dumps({"status": "awaiting_reply", "decision": decision}, ensure_ascii=False))
+    print(
+        json.dumps(
+            {
+                "status": "awaiting_reply",
+                "decision": decision,
+                "next_check_in": campaign.get("next_check_in"),
+            },
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 

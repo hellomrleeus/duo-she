@@ -289,6 +289,14 @@ When those conditions are met:
    - How to adapt on done, partial, blocked, or reschedule outcomes
 4. Persist a channel state file if the automation needs reminder counters or timing state outside the thread text itself
 
+Important behavior note:
+
+- Telegram and email reply capture are polling-based, not webhook-triggered
+- A one-shot automation can send a message, but it cannot notice a later reply unless another run happens
+- For demos, use a 1-minute heartbeat
+- For normal use, use a 3-5 minute heartbeat
+- Each run should rerun the built-in follow-up orchestrator for the project
+
 Never promise delivery channels that do not exist in the current runtime.
 
 ### Telegram Delivery
@@ -302,6 +310,7 @@ If the user explicitly asks for Telegram delivery, use the local relay workflow 
 - [`scripts/evaluate_follow_up.py`](scripts/evaluate_follow_up.py) to decide whether another nudge is due
 - Use the lower-level `send/check/evaluate` scripts directly only when the task genuinely needs custom orchestration
 - Do not generate a new project-local Telegram wrapper if [`scripts/run_telegram_followup.py`](scripts/run_telegram_followup.py) already covers the workflow
+- Remember that Telegram replies are detected on the next polling run, not by a push event from Telegram
 
 Prefer credentials in this order:
 
@@ -321,6 +330,7 @@ If the user explicitly asks for email delivery, use the local relay workflow des
 - [`scripts/evaluate_follow_up.py`](scripts/evaluate_follow_up.py) to decide whether another nudge is due
 - Use the lower-level `send/check/evaluate` scripts directly only when the task genuinely needs custom orchestration
 - Do not generate a new project-local email wrapper if [`scripts/run_email_followup.py`](scripts/run_email_followup.py) already covers the workflow
+- Remember that email replies are detected on the next polling run, not by a push event from the mailbox provider
 
 Prefer `.duo-she/email.json`.
 
