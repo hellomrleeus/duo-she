@@ -120,6 +120,12 @@ After editing it, regenerate `SKILL.md` with:
 python3 scripts/sync_skill.py
 ```
 
+To verify sync without rewriting the file:
+
+```bash
+python3 scripts/sync_skill.py --check
+```
+
 ## Uninstalling
 
 ```bash

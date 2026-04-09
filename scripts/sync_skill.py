@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Regenerate SKILL.md from CLAUDE.md."""
+"""Regenerate or verify SKILL.md from CLAUDE.md."""
 
 from __future__ import annotations
 
+import argparse
+import sys
 from pathlib import Path
 
 NOTICE = (
@@ -22,19 +24,41 @@ def split_frontmatter(text: str) -> tuple[str, str]:
     return text[:end], text[end:]
 
 
-def main() -> None:
-    root = Path(__file__).resolve().parents[1]
-    source = root / "CLAUDE.md"
-    target = root / "SKILL.md"
-    frontmatter, body = split_frontmatter(source.read_text())
+def render_skill(source_text: str) -> str:
+    frontmatter, body = split_frontmatter(source_text)
     body = body.replace(
         "This is the canonical source-of-truth file for the skill.",
         "This file mirrors the canonical instructions in [`CLAUDE.md`](CLAUDE.md).",
         1,
     )
     body = body.replace("- Edit this file first.", "- Edit `CLAUDE.md` first.", 1)
-    payload = f"{frontmatter}\n{NOTICE}{body.lstrip()}"
+    return f"{frontmatter}\n{NOTICE}{body.lstrip()}"
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Sync SKILL.md from CLAUDE.md.")
+    parser.add_argument("--check", action="store_true", help="Exit non-zero if SKILL.md is out of sync.")
+    parser.add_argument("--stdout", action="store_true", help="Print the rendered SKILL.md instead of writing it.")
+    args = parser.parse_args()
+
+    root = Path(__file__).resolve().parents[1]
+    source = root / "CLAUDE.md"
+    target = root / "SKILL.md"
+    payload = render_skill(source.read_text())
+
+    if args.stdout:
+        sys.stdout.write(payload)
+        return
+
+    if args.check:
+        current = target.read_text() if target.exists() else ""
+        if current != payload:
+            raise SystemExit("SKILL.md is out of sync with CLAUDE.md. Run: python3 scripts/sync_skill.py")
+        print("SKILL.md is in sync with CLAUDE.md.")
+        return
+
     target.write_text(payload)
+    print("Updated SKILL.md from CLAUDE.md.")
 
 
 if __name__ == "__main__":

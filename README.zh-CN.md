@@ -154,6 +154,14 @@ Telegram 和 Email 都需要一次性初始化以及本地凭据配置。
 python3 scripts/sync_skill.py
 ```
 
+如果只想检查同步状态而不改文件，可以运行：
+
+```bash
+python3 scripts/sync_skill.py --check
+```
+
+仓库里的 GitHub Actions 也会自动做这项检查。
+
 ## 仓库地址
 
 - GitHub：[hellomrleeus/duo-she](https://github.com/hellomrleeus/duo-she)

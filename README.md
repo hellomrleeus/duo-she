@@ -154,6 +154,14 @@ After editing it, regenerate `SKILL.md` with:
 python3 scripts/sync_skill.py
 ```
 
+To verify the mirror is clean without rewriting files:
+
+```bash
+python3 scripts/sync_skill.py --check
+```
+
+The repository also runs this check in GitHub Actions.
+
 ## Repository
 
 - GitHub: [hellomrleeus/duo-she](https://github.com/hellomrleeus/duo-she)
