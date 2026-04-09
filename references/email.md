@@ -4,6 +4,7 @@ Use this path when the user explicitly asks for email delivery or email-based ch
 
 ## What works
 
+- Run the whole email follow-up loop with `scripts/run_email_followup.py`
 - Send a task briefing by SMTP with `scripts/send_email.py`
 - Poll for a reply by IMAP with `scripts/check_email_reply.py`
 - Evaluate no-reply escalation with `scripts/evaluate_follow_up.py`
@@ -45,6 +46,22 @@ Freeform replies are still accepted; the script records the latest reply text an
 
 ## Example: send a mission and initialize channel state
 
+Preferred orchestration path:
+
+```bash
+python3 scripts/run_email_followup.py --project-root .
+```
+
+That script will:
+
+1. read `.duo-she/duo-she-state.json`
+2. send the first email when needed
+3. poll for replies on later runs
+4. send nudges only when `evaluate_follow_up.py` says they are due
+5. write updates back to `.duo-she/duo-she-state.json` and `.duo-she/email-state.json`
+
+Only drop to the lower-level scripts below if you need custom orchestration.
+
 ```bash
 python3 scripts/send_email.py \
   --state-file .duo-she/email-state.json \
@@ -75,6 +92,7 @@ python3 scripts/evaluate_follow_up.py \
 
 ## Notes
 
+- For recurring follow-up, prefer `scripts/run_email_followup.py` over a custom project-local wrapper
 - Prefer app passwords instead of normal mailbox passwords
 - Reply detection is strongest when the user actually replies to the sent message
 - If the mailbox provider rewrites headers in unusual ways, keep the fallback rule: any reply from the configured sender after `last_sent_at` counts as a reply

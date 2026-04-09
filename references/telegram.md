@@ -4,6 +4,7 @@ Use this path only when the user explicitly asks for Telegram delivery.
 
 ## What works
 
+- Run the whole Telegram follow-up loop with `scripts/run_telegram_followup.py`
 - Send a task briefing to the user's Telegram account with `scripts/send_telegram.py`
 - Poll Telegram for the user's reply with `scripts/check_telegram_reply.py`
 - Evaluate no-reply escalation with `scripts/evaluate_follow_up.py`
@@ -59,6 +60,22 @@ Freeform replies are still accepted; the script records the latest reply text an
 
 ## Example: send a mission and initialize channel state
 
+Preferred orchestration path:
+
+```bash
+python3 scripts/run_telegram_followup.py --project-root .
+```
+
+That script will:
+
+1. read `.duo-she/duo-she-state.json`
+2. send the first Telegram message when needed
+3. poll for replies on later runs
+4. send nudges only when `evaluate_follow_up.py` says they are due
+5. write updates back to `.duo-she/duo-she-state.json` and `.duo-she/telegram-state.json`
+
+Only drop to the lower-level scripts below if you need custom orchestration.
+
 ```bash
 python3 scripts/send_telegram.py \
   --state-file .duo-she/telegram-state.json \
@@ -88,7 +105,15 @@ python3 scripts/evaluate_follow_up.py \
 
 ## Automation pattern
 
-For a recurring automation loop:
+For a recurring automation loop, prefer:
+
+```bash
+python3 scripts/run_telegram_followup.py --project-root .
+```
+
+Do not generate a new project-local `telegram_followup.py` wrapper unless the user explicitly asks for custom logic that the built-in orchestrator cannot express.
+
+If you need the low-level breakdown, the built-in orchestrator is effectively doing this:
 
 1. On the send run, call `scripts/send_telegram.py` and write the state file
 2. On the follow-up run, call `scripts/check_telegram_reply.py`

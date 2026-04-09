@@ -293,10 +293,13 @@ Never promise delivery channels that do not exist in the current runtime.
 
 If the user explicitly asks for Telegram delivery, use the local relay workflow described in [`references/telegram.md`](references/telegram.md):
 
+- Prefer the built-in orchestrator [`scripts/run_telegram_followup.py`](scripts/run_telegram_followup.py) when the task is "send if needed, poll, and nudge on repeat runs"
 - [`scripts/setup_telegram.py`](scripts/setup_telegram.py) for one-time setup
 - [`scripts/send_telegram.py`](scripts/send_telegram.py) to send the mission and initialize the channel state
 - [`scripts/check_telegram_reply.py`](scripts/check_telegram_reply.py) to detect reply evidence
 - [`scripts/evaluate_follow_up.py`](scripts/evaluate_follow_up.py) to decide whether another nudge is due
+- Use the lower-level `send/check/evaluate` scripts directly only when the task genuinely needs custom orchestration
+- Do not generate a new project-local Telegram wrapper if [`scripts/run_telegram_followup.py`](scripts/run_telegram_followup.py) already covers the workflow
 
 Prefer credentials in this order:
 
@@ -309,10 +312,13 @@ If Telegram is unavailable, say so and fall back to Codex automation or manual c
 
 If the user explicitly asks for email delivery, use the local relay workflow described in [`references/email.md`](references/email.md):
 
+- Prefer the built-in orchestrator [`scripts/run_email_followup.py`](scripts/run_email_followup.py) when the task is "send if needed, poll, and nudge on repeat runs"
 - [`scripts/setup_email.py`](scripts/setup_email.py) for one-time setup
 - [`scripts/send_email.py`](scripts/send_email.py) to send the mission and initialize the channel state
 - [`scripts/check_email_reply.py`](scripts/check_email_reply.py) to detect reply evidence
 - [`scripts/evaluate_follow_up.py`](scripts/evaluate_follow_up.py) to decide whether another nudge is due
+- Use the lower-level `send/check/evaluate` scripts directly only when the task genuinely needs custom orchestration
+- Do not generate a new project-local email wrapper if [`scripts/run_email_followup.py`](scripts/run_email_followup.py) already covers the workflow
 
 Prefer `.duo-she/email.json`.
 

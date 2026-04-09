@@ -140,8 +140,8 @@ Manual check-in is the default mode.
 If the user explicitly asks for recurring follow-up, DuoShe can use:
 
 - Codex automations in Codex
-- Telegram via the local relay scripts
-- Email via the local relay scripts
+- Telegram via the built-in orchestrator `scripts/run_telegram_followup.py`
+- Email via the built-in orchestrator `scripts/run_email_followup.py`
 
 Telegram and email require one-time setup and local credentials.
 

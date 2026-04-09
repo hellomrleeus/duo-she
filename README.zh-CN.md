@@ -140,8 +140,8 @@ git clone git@github.com:hellomrleeus/duo-she.git
 如果用户明确要求持续跟进，DuoShe 可以使用：
 
 - Codex 里的 automations
-- 通过本地脚本接入的 Telegram
-- 通过本地脚本接入的 Email
+- 通过内置 orchestrator `scripts/run_telegram_followup.py` 接入的 Telegram
+- 通过内置 orchestrator `scripts/run_email_followup.py` 接入的 Email
 
 Telegram 和 Email 都需要一次性初始化以及本地凭据配置。
 

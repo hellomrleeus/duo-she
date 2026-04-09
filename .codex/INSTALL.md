@@ -89,6 +89,12 @@ This saves config to:
 .duo-she/telegram.json
 ```
 
+For recurring Telegram follow-up, prefer:
+
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/duo-she/scripts/run_telegram_followup.py" --project-root .
+```
+
 ### Email
 
 ```bash
@@ -100,6 +106,12 @@ This saves config to:
 
 ```bash
 .duo-she/email.json
+```
+
+For recurring email follow-up, prefer:
+
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/duo-she/scripts/run_email_followup.py" --project-root .
 ```
 
 ## Updating
