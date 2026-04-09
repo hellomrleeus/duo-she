@@ -28,6 +28,30 @@
 - 只有在当前运行时真的支持时，才使用平台专属自动化能力
 - 如果某个能力当前不可用，就明确说明并退回到最近似的可行方案
 
+## 实际运行方式
+
+DuoShe 的标准闭环是：
+
+1. 先锁定目标、约束、截止时间和时间预算
+2. 再拆成阶段计划、近期待办和当前任务
+3. 给用户一条带交付物和验收标准的明确任务
+4. 要求用户按时带证据回来
+5. 把结果归类成 `done`、`partial`、`blocked` 或 `reschedule`
+6. 更新保存状态并下发下一条任务
+
+如果用户一开始就把上下文说得很完整，DuoShe 可以走 fast path：跳过冗长问诊，直接锁定目标并下发第一条任务。
+
+## 推荐回复格式
+
+推荐用户这样回：
+
+- `done + evidence`
+- `partial + evidence`
+- `blocked + blocker`
+- `reschedule + new time`
+
+自由格式回复仍然可以工作，但结构化回复更利于自动适配和提醒节奏控制。
+
 ## 安装
 
 ### Codex
@@ -92,6 +116,13 @@ git clone git@github.com:hellomrleeus/duo-she.git
 
 - `duo-she-plan.md`
 - `duo-she-state.json`
+- `.duo-she-<channel>-state.json`
+
+它们的职责分别是：
+
+- `duo-she-plan.md`：给人看的清单和时间线
+- `duo-she-state.json`：保存阶段、任务、复盘、阻塞和总进度
+- `.duo-she-<channel>-state.json`：保存 Telegram、Email 或自动提醒的发送状态与提醒计数
 
 这些属于运行时数据，应该生成在当前工作目录，而不是 skill 自己的目录里。
 
@@ -106,6 +137,22 @@ git clone git@github.com:hellomrleeus/duo-she.git
 - 通过本地脚本接入的 Email
 
 Telegram 和 Email 都需要一次性初始化以及本地凭据配置。
+
+提醒节奏默认带静默时段：
+
+- 默认 quiet hours：`22:00-08:00`
+- 默认 workday end：`22:00`
+- 如果任务跨夜未回，第二天早上的第一条提醒应该是 reset，而不是继续追发过期的 urgent
+
+## 维护说明
+
+`CLAUDE.md` 是唯一的规范源文件。
+
+修改它之后，用下面的命令重建 `SKILL.md`：
+
+```bash
+python3 scripts/sync_skill.py
+```
 
 ## 仓库地址
 

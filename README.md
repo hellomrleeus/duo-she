@@ -28,6 +28,30 @@ The behavior is intentionally aligned across both runtimes:
 - use platform-specific automation only when the runtime supports it
 - fall back cleanly when a feature is unavailable
 
+## How DuoShe Runs
+
+The normal execution loop is:
+
+1. Lock the goal, constraints, deadline, and time budget
+2. Break the work into phases, a near-term plan, and the current mission
+3. Give the user one concrete mission with a deliverable and acceptance check
+4. Ask the user to come back with evidence
+5. Classify the return as `done`, `partial`, `blocked`, or `reschedule`
+6. Update the saved state and assign the next mission
+
+If the user already provides enough context, DuoShe can use a fast path: skip the long intake, lock the spec immediately, and issue the first mission right away.
+
+## Reply Contract
+
+The preferred replies are:
+
+- `done + evidence`
+- `partial + evidence`
+- `blocked + blocker`
+- `reschedule + new time`
+
+Freeform replies still work, but the structured contract makes adaptation and reminders much cleaner.
+
 ## Install
 
 ### Codex
@@ -92,6 +116,13 @@ When the task matters beyond a single reply, DuoShe can create:
 
 - `duo-she-plan.md`
 - `duo-she-state.json`
+- `.duo-she-<channel>-state.json`
+
+Use them this way:
+
+- `duo-she-plan.md`: human-readable checklist and timeline
+- `duo-she-state.json`: planning truth for phases, missions, reviews, blockers, and progress
+- `.duo-she-<channel>-state.json`: delivery truth for Telegram, email, or automation reminder loops
 
 These files are runtime data and should be created in the active workspace, not inside the skill folder.
 
@@ -106,6 +137,22 @@ If the user explicitly asks for recurring follow-up, DuoShe can use:
 - Email via the local relay scripts
 
 Telegram and email require one-time setup and local credentials.
+
+Reminder timing is quiet-hours-aware:
+
+- default quiet hours: `22:00-08:00`
+- default workday end: `22:00`
+- overnight misses reopen with a reset-style morning prompt instead of stale urgent spam
+
+## Maintainer Workflow
+
+`CLAUDE.md` is the canonical source file.
+
+After editing it, regenerate `SKILL.md` with:
+
+```bash
+python3 scripts/sync_skill.py
+```
 
 ## Repository
 

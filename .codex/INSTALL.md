@@ -110,6 +110,16 @@ cd /path/to/repo && git pull
 
 If you installed by copying files, replace the installed folder with the updated `duo-she` directory.
 
+## Maintainer note
+
+`CLAUDE.md` is the canonical instruction file in this repository.
+
+After editing it, regenerate `SKILL.md` with:
+
+```bash
+python3 scripts/sync_skill.py
+```
+
 ## Uninstalling
 
 ```bash

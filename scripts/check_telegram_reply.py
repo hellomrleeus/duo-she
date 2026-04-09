@@ -54,6 +54,21 @@ def save_state(path: Path, state: dict) -> None:
     path.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n")
 
 
+def classify_reply(text: str) -> str:
+    lowered = text.strip().lower()
+    if not lowered:
+        return "freeform"
+    if lowered.startswith(("done", "完成", "已完成", "做完")):
+        return "done"
+    if lowered.startswith(("partial", "部分", "没做完", "还差")):
+        return "partial"
+    if lowered.startswith(("blocked", "卡住", "受阻", "block")):
+        return "blocked"
+    if lowered.startswith(("reschedule", "改期", "延期", "晚点", "改到")):
+        return "reschedule"
+    return "freeform"
+
+
 def get_updates(bot_token: str, offset: int | None = None) -> dict:
     query = {"timeout": 0}
     if offset is not None:
@@ -152,24 +167,32 @@ def main() -> None:
         state["last_update_id"] = int(max_update_id)
 
     if latest_reply:
+        reply_status = classify_reply(latest_reply["reply_text"])
         state.update(
             {
                 "awaiting_reply": False,
-                "completed": True,
+                "completed": reply_status == "done",
+                "status": reply_status,
+                "reply_status": reply_status,
                 **latest_reply,
             }
         )
     else:
         state.setdefault("awaiting_reply", True)
         state.setdefault("completed", False)
+        state.setdefault("status", "awaiting_reply")
+        state.setdefault("reply_status", "")
 
     save_state(state_path, state)
 
     print(
         json.dumps(
             {
-                "completed": bool(latest_reply),
+                "replied": bool(latest_reply),
+                "completed": state.get("completed", False),
                 "awaiting_reply": state.get("awaiting_reply", False),
+                "status": state.get("status"),
+                "reply_status": state.get("reply_status"),
                 "reply_text": state.get("reply_text"),
                 "last_update_id": state.get("last_update_id"),
             },

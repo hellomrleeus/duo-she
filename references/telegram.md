@@ -6,7 +6,8 @@ Use this path only when the user explicitly asks for Telegram delivery.
 
 - Send a task briefing to the user's Telegram account with `scripts/send_telegram.py`
 - Poll Telegram for the user's reply with `scripts/check_telegram_reply.py`
-- Mark the task complete when any non-bot text reply arrives from the target chat
+- Evaluate no-reply escalation with `scripts/evaluate_follow_up.py`
+- Stop nudging as soon as a valid user reply arrives
 
 ## Required secrets
 
@@ -44,12 +45,30 @@ python3 scripts/setup_telegram.py \
 
 After that, `send_telegram.py` and `check_telegram_reply.py` will read the config automatically.
 
-## Example: send the one-hour mood check
+## Recommended reply contract
+
+Ask the user to reply with one of:
+
+- `done + evidence`
+- `partial + evidence`
+- `blocked + blocker`
+- `reschedule + new time`
+
+Freeform replies are still accepted; the script records the latest reply text and status.
+
+## Example: send a mission and initialize channel state
 
 ```bash
 python3 scripts/send_telegram.py \
   --state-file .duo-she-telegram-state.json \
-  --text "一个小时到了，你现在心情怎么样？回复一句心情，这次测试就算完成。"
+  --task-id speaking-day-03 \
+  --mission-id M-2026-04-10-01 \
+  --deadline-minutes 60 \
+  --timezone Asia/Shanghai \
+  --quiet-hours 22:00-08:00 \
+  --workday-end 22:00 \
+  --reply-contract "done + evidence | partial + evidence | blocked + blocker | reschedule + new time" \
+  --text "⏱️ 60 分钟任务：录 3 段英文自我介绍。到点直接回 done / partial / blocked / reschedule，并附一句证据。"
 ```
 
 ## Example: check whether the user replied
@@ -59,11 +78,19 @@ python3 scripts/check_telegram_reply.py \
   --state-file .duo-she-telegram-state.json
 ```
 
+## Example: decide whether another nudge is due
+
+```bash
+python3 scripts/evaluate_follow_up.py \
+  --state-file .duo-she-telegram-state.json
+```
+
 ## Automation pattern
 
-For a recurring Codex automation:
+For a recurring automation loop:
 
-1. On the send run, call `scripts/send_telegram.py` and write the state file.
-2. On the follow-up run, call `scripts/check_telegram_reply.py`.
-3. If `completed=true`, confirm success in the thread and stop nudging.
-4. If not completed, either wait longer or send a shorter nudge.
+1. On the send run, call `scripts/send_telegram.py` and write the state file
+2. On the follow-up run, call `scripts/check_telegram_reply.py`
+3. If `awaiting_reply=false`, stop nudging and hand control back to the main DuoShe review loop
+4. If still waiting, call `scripts/evaluate_follow_up.py`
+5. Only send another message when the evaluator returns `{"action":"send",...}`

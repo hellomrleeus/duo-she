@@ -6,7 +6,8 @@ Use this path when the user explicitly asks for email delivery or email-based ch
 
 - Send a task briefing by SMTP with `scripts/send_email.py`
 - Poll for a reply by IMAP with `scripts/check_email_reply.py`
-- Mark the task complete when an incoming email from the configured reply address arrives after the task was sent
+- Evaluate no-reply escalation with `scripts/evaluate_follow_up.py`
+- Stop nudging as soon as a valid user reply arrives
 
 ## Required configuration
 
@@ -30,14 +31,31 @@ Recommended fields:
 - reply-from email address
 - IMAP folder, usually `INBOX`
 
-## Example: send a one-hour mood check
+## Recommended reply contract
+
+Ask the user to reply with one of:
+
+- `done + evidence`
+- `partial + evidence`
+- `blocked + blocker`
+- `reschedule + new time`
+
+Freeform replies are still accepted; the script records the latest reply text and status.
+
+## Example: send a mission and initialize channel state
 
 ```bash
 python3 scripts/send_email.py \
   --state-file .duo-she-email-state.json \
+  --task-id speaking-day-03 \
+  --mission-id M-2026-04-10-01 \
   --deadline-minutes 60 \
-  --subject "夺舍测试：一小时后回我心情" \
-  --text "一个小时后直接回复这封邮件，告诉我你现在心情怎么样。你一回复，这次测试就算完成。"
+  --timezone Asia/Shanghai \
+  --quiet-hours 22:00-08:00 \
+  --workday-end 22:00 \
+  --reply-contract "done + evidence | partial + evidence | blocked + blocker | reschedule + new time" \
+  --subject "夺舍任务：60 分钟后给我状态" \
+  --text "请在 60 分钟后直接回复这封邮件，并用 done / partial / blocked / reschedule 开头，后面补一句证据或阻塞原因。"
 ```
 
 ## Example: check whether the user replied
@@ -47,8 +65,15 @@ python3 scripts/check_email_reply.py \
   --state-file .duo-she-email-state.json
 ```
 
+## Example: decide whether another nudge is due
+
+```bash
+python3 scripts/evaluate_follow_up.py \
+  --state-file .duo-she-email-state.json
+```
+
 ## Notes
 
 - Prefer app passwords instead of normal mailbox passwords
 - Reply detection is strongest when the user actually replies to the sent message
-- If the mailbox provider rewrites headers in unusual ways, keep the fallback rule: any reply from the configured sender after `last_sent_at` counts as completion
+- If the mailbox provider rewrites headers in unusual ways, keep the fallback rule: any reply from the configured sender after `last_sent_at` counts as a reply

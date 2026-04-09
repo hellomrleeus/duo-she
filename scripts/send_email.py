@@ -66,6 +66,18 @@ def main() -> None:
     parser.add_argument("--from-email")
     parser.add_argument("--state-file")
     parser.add_argument("--task-id")
+    parser.add_argument("--mission-id")
+    parser.add_argument("--goal-snapshot")
+    parser.add_argument("--reply-contract")
+    parser.add_argument("--timezone", help="IANA timezone name for reminder evaluation.")
+    parser.add_argument(
+        "--quiet-hours",
+        help="Quiet hours window in local time, for example 22:00-08:00.",
+    )
+    parser.add_argument(
+        "--workday-end",
+        help="Local workday end time, for example 22:00.",
+    )
     parser.add_argument("--deadline-minutes", type=int)
     args = parser.parse_args()
 
@@ -91,21 +103,41 @@ def main() -> None:
     if args.state_file:
         state_path = Path(args.state_file)
         state = load_json(state_path)
+        quiet_hours = args.quiet_hours or state.get("quiet_hours") or "22:00-08:00"
         state.update(
             {
+                "state_version": 2,
+                "channel": "email",
+                "status": "awaiting_reply",
                 "awaiting_reply": True,
                 "completed": False,
+                "reply_status": "",
                 "reply_target": config.get("reply_from", to_email),
                 "last_prompt": body,
                 "last_sent_at": sent_at,
                 "last_sent_message_id": msg["Message-ID"],
                 "reminder_count": 0,
+                "last_nudge_at": 0,
+                "last_nudge_stage": "",
+                "quiet_hours": quiet_hours,
+                "workday_end": args.workday_end or state.get("workday_end") or quiet_hours.split("-", 1)[0],
+                "reply_contract": args.reply_contract
+                or state.get("reply_contract")
+                or "done + evidence | partial + evidence | blocked + blocker | reschedule + new time",
             }
         )
+        if args.timezone:
+            state["timezone"] = args.timezone
+        elif "timezone" not in state and os.getenv("TZ"):
+            state["timezone"] = os.getenv("TZ")
         if args.deadline_minutes is not None:
             state["due_at"] = sent_at + int(args.deadline_minutes) * 60
         if args.task_id:
             state["task_id"] = args.task_id
+        if args.mission_id:
+            state["mission_id"] = args.mission_id
+        if args.goal_snapshot:
+            state["goal_snapshot"] = args.goal_snapshot
         save_json(state_path, state)
 
     print(

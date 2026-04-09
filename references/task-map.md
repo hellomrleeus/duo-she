@@ -14,12 +14,35 @@ That means the task map must show both:
 - the whole project structure
 - the current executable mission
 
-## Default files
+## State layers
 
-- `duo-she-plan.md`: human-readable checklist and timeline
-- `duo-she-state.json`: machine-readable execution state
+Use two state layers when durable execution matters:
 
-Only create these when the user wants durable tracking or the plan is complex enough to benefit from saved state.
+- `duo-she-plan.md`: human-readable campaign map and checklist
+- `duo-she-state.json`: campaign state for planning truth
+- `.duo-she-<channel>-state.json`: optional delivery state for Telegram, email, or automation loops
+
+Use campaign state for:
+
+- goal
+- phases
+- near-term plan
+- current mission
+- last review
+- blockers
+- progress
+
+Use channel state for:
+
+- due time
+- reminder counters
+- channel metadata
+- timezone
+- quiet hours
+- workday end
+- latest reply status
+
+Do not mix the two layers unless the task is so small that saving state is unnecessary.
 
 ## Granularity rule
 
@@ -43,11 +66,13 @@ Expand future work into hourly detail just-in-time as the user approaches it.
 - 目标:
 - 截止时间:
 - 完成标准:
+- 时区:
 
 ## Progress
 - 总进度:
 - 当前阶段:
-- 当前任务:
+- 最近一次复盘:
+- 下次回报时间:
 
 ## Phases
 - [ ] Phase 1:
@@ -65,10 +90,14 @@ Expand future work into hourly detail just-in-time as the user approaches it.
 - [ ] 14:00-15:00:
 
 ## Current Mission
+- 任务编号:
 - 时间块:
+- 优先级:
 - 任务:
 - 交付物:
 - 验收标准:
+- 回报格式:
+- 证据提示:
 
 ## Completed Log
 - 2026-04-10:
@@ -81,35 +110,94 @@ Expand future work into hourly detail just-in-time as the user approaches it.
 
 ```json
 {
+  "state_version": 2,
   "goal": "",
   "deadline": "",
+  "timezone": "Asia/Shanghai",
   "success_criteria": [],
   "progress_percent": 0,
-  "current_phase": "",
-  "current_day": "",
+  "status": "active",
+  "current_phase": {
+    "id": "",
+    "name": "",
+    "status": "active"
+  },
+  "phases": [
+    {
+      "id": "",
+      "name": "",
+      "status": "planned",
+      "exit_criteria": []
+    }
+  ],
+  "next_7_days": [
+    {
+      "date": "",
+      "focus": "",
+      "tasks": []
+    }
+  ],
   "current_mission": {
+    "mission_id": "",
+    "title": "",
     "start": "",
     "end": "",
+    "estimated_minutes": 60,
+    "priority": "high",
     "task": "",
     "deliverable": "",
-    "acceptance": ""
+    "acceptance": [],
+    "evidence_hint": "",
+    "reply_format": "done | partial | blocked | reschedule"
   },
-  "next_check_in": "",
+  "last_review": {
+    "status": "",
+    "completion_percent": 0,
+    "evidence_ref": "",
+    "blocker_type": "",
+    "notes": "",
+    "next_decision": ""
+  },
+  "blockers": [],
+  "next_check_in": ""
+}
+```
+
+## Suggested channel state shape
+
+Use `.duo-she-telegram-state.json`, `.duo-she-email-state.json`, or another channel-specific filename.
+
+```json
+{
+  "state_version": 2,
+  "channel": "telegram",
+  "task_id": "",
+  "mission_id": "",
+  "goal_snapshot": "",
+  "timezone": "Asia/Shanghai",
+  "quiet_hours": "22:00-08:00",
+  "workday_end": "22:00",
   "due_at": 0,
-  "awaiting_reply": false,
+  "awaiting_reply": true,
+  "completed": false,
+  "status": "awaiting_reply",
+  "reply_contract": "done + evidence | partial + evidence | blocked + blocker | reschedule + new time",
+  "reply_status": "",
   "reminder_count": 0,
   "last_nudge_at": 0,
   "last_nudge_stage": "",
-  "blockers": [],
-  "last_review": "",
-  "status": "active"
+  "last_sent_at": 0,
+  "last_prompt": "",
+  "last_sent_message_id": ""
 }
 ```
 
 ## Update rules
 
-- Rewrite `Current Mission` every time a new hour block is assigned
-- Update `Completed Log` after every review
+- Rewrite `Current Mission` every time a new work block is assigned
+- Update `last_review` after every review, even when the result is blocked or rescheduled
+- Update `Completed Log` after every meaningful review
 - Update `Next 7 Days` only when priorities materially change
 - Update phase checkboxes only when a meaningful milestone is actually cleared
 - If the user falls behind, preserve the record and re-scope; do not silently rewrite history
+- If persistent delivery is enabled, update the channel state after every send, reply check, and reminder send

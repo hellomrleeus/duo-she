@@ -93,6 +93,21 @@ def main() -> None:
     parser.add_argument("--disable-notification", action="store_true")
     parser.add_argument("--state-file", help="Optional JSON state file to update after sending.")
     parser.add_argument("--task-id", help="Optional task identifier stored in the state file.")
+    parser.add_argument("--mission-id", help="Optional mission identifier stored in the state file.")
+    parser.add_argument("--goal-snapshot", help="Optional goal summary stored in the state file.")
+    parser.add_argument(
+        "--reply-contract",
+        help="Human-readable reply contract stored in the state file.",
+    )
+    parser.add_argument("--timezone", help="IANA timezone name for reminder evaluation.")
+    parser.add_argument(
+        "--quiet-hours",
+        help="Quiet hours window in local time, for example 22:00-08:00.",
+    )
+    parser.add_argument(
+        "--workday-end",
+        help="Local workday end time, for example 22:00.",
+    )
     parser.add_argument(
         "--deadline-minutes",
         type=int,
@@ -134,21 +149,42 @@ def main() -> None:
     if args.state_file:
         state_path = Path(args.state_file)
         state = load_state(state_path)
+        sent_at = int(time.time())
+        quiet_hours = args.quiet_hours or state.get("quiet_hours") or "22:00-08:00"
         state.update(
             {
+                "state_version": 2,
+                "channel": "telegram",
+                "status": "awaiting_reply",
                 "awaiting_reply": True,
                 "completed": False,
+                "reply_status": "",
                 "chat_id": str(chat_id),
                 "last_prompt": text,
-                "last_sent_at": int(time.time()),
+                "last_sent_at": sent_at,
                 "last_sent_message_id": message.get("message_id"),
                 "reminder_count": 0,
+                "last_nudge_at": 0,
+                "last_nudge_stage": "",
+                "quiet_hours": quiet_hours,
+                "workday_end": args.workday_end or state.get("workday_end") or quiet_hours.split("-", 1)[0],
+                "reply_contract": args.reply_contract
+                or state.get("reply_contract")
+                or "done + evidence | partial + evidence | blocked + blocker | reschedule + new time",
             }
         )
+        if args.timezone:
+            state["timezone"] = args.timezone
+        elif "timezone" not in state and os.getenv("TZ"):
+            state["timezone"] = os.getenv("TZ")
         if args.deadline_minutes is not None:
-            state["due_at"] = int(time.time()) + int(args.deadline_minutes) * 60
+            state["due_at"] = sent_at + int(args.deadline_minutes) * 60
         if args.task_id:
             state["task_id"] = args.task_id
+        if args.mission_id:
+            state["mission_id"] = args.mission_id
+        if args.goal_snapshot:
+            state["goal_snapshot"] = args.goal_snapshot
         save_state(state_path, state)
 
     summary = {

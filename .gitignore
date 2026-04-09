@@ -1,6 +1,5 @@
 __pycache__/
-.duo-she-telegram-state.json
-.duo-she-email-state.json
+.duo-she-*-state.json
 duo-she-plan.md
 duo-she-state.json
 task-dashboard.html
